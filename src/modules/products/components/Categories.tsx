@@ -1,6 +1,6 @@
 "use client";
 
-import type { MenuCategory } from "@/src/modules/products/types";
+import type { MenuCategory } from "@/src/modules/products/types.products";
 import { cn } from "@/src/lib/utils";
 
 type CategoriesProps = {

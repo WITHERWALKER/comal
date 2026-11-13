@@ -1,4 +1,4 @@
-import type { MenuProduct } from "@/src/modules/products/types";
+import type { MenuProduct } from "@/src/modules/products/types.products";
 
 export const CART_STORAGE_KEY = "comal-cart-v1";
 

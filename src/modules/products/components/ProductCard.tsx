@@ -1,6 +1,6 @@
 "use client";
 
-import type { MenuProduct } from "@/src/modules/products/types";
+import type { MenuProduct } from "@/src/modules/products/types.products";
 import { Minus } from "@/src/shared/components/animate-ui/icons/minus";
 import { Plus } from "@/src/shared/components/animate-ui/icons/plus";
 import { useCart } from "@/src/shared/context/cart-provider";

@@ -1,6 +1,9 @@
 "use client";
 
-import type { MenuCategory, MenuProduct } from "@/src/modules/products/types";
+import type {
+  MenuCategory,
+  MenuProduct,
+} from "@/src/modules/products/types.products";
 import { routes } from "@/src/config/navigation";
 import Categories from "@/src/modules/products/components/Categories";
 import CategoryMenuHeader from "@/src/modules/products/components/CategoryMenuHeader";
