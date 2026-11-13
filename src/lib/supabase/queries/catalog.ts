@@ -1,4 +1,7 @@
-import type { MenuCategory, MenuProduct } from "@/src/modules/products/types";
+import type {
+  MenuCategory,
+  MenuProduct,
+} from "@/src/modules/products/types.products";
 import { getSupabase } from "@/src/lib/supabase/server";
 
 type CategoryRow = {
@@ -6,6 +9,7 @@ type CategoryRow = {
   name: string;
   slug: string;
   sort_order: number;
+  image_path: string | null;
 };
 
 type ProductRow = {
@@ -31,7 +35,7 @@ export async function getCategories(): Promise<MenuCategory[]> {
 
   const { data, error } = await supabase
     .from("categories")
-    .select("id, name, slug, sort_order")
+    .select("id, name, slug, sort_order, image_path")
     .is("archived_at", null)
     .eq("is_available", true)
     .order("sort_order");
@@ -45,6 +49,7 @@ export async function getCategories(): Promise<MenuCategory[]> {
     name: row.name,
     slug: row.slug,
     sortOrder: row.sort_order,
+    imagePath: row.image_path,
   }));
 }
 
