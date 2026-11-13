@@ -10,6 +10,7 @@ Convenciones del App Router en Comal. Los **route groups** `(nombre)` organizan 
 | `/menu` | `(public)/menu/page.tsx` | `(public)/layout` | Cliente |
 | `/cart` | `(public)/cart/page.tsx` | `(public)/layout` | Cliente |
 | `/checkout` | `(public)/checkout/page.tsx` | `(public)/layout` | Cliente |
+| `/order/[token]` | `(public)/order/[token]/page.tsx` | `(public)/layout` | Cliente (confirmación invitado) |
 | `/admin` | `(admin)/admin/page.tsx` | `(admin)/admin/layout` | Operación |
 | `/courier` | `(courier)/courier/page.tsx` | `(courier)/courier/layout` | Repartidor |
 | `/api/health` | `api/health/route.ts` | — | Infra |

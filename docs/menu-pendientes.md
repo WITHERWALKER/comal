@@ -1,7 +1,9 @@
-# Menú — pendientes
+# Menú y flujo público — pendientes
 
-Lista de trabajo para el menú público y el flujo cliente inmediato.  
-Actualizado a partir del estado del repo y [`Comal_Context.md`](../Comal_Context.md).
+Checklist del **cliente** (home, menú, carrito, checkout, confirmación).  
+No incluye admin ni repartidor.
+
+Última actualización: 12/nov/2026 · Contexto: [`comal-context.md`](comal-context.md) · Estado global: [`status-project.md`](status-project.md)
 
 Marcar con `[x]` conforme se complete.
 
@@ -9,65 +11,92 @@ Marcar con `[x]` conforme se complete.
 
 ## Hecho (referencia)
 
-- [x] Catálogo desde Supabase (`getCategories` / `getProducts` en [`src/lib/supabase/queries/catalog.ts`](../src/lib/supabase/queries/catalog.ts)).
+### Catálogo y menú
+
+- [x] Catálogo desde Supabase (`getCategories` / `getProducts` en [`catalog.ts`](../src/lib/supabase/queries/catalog.ts)).
 - [x] Filtro por categoría con `?category=` y `slug` en BD.
-- [x] Vista **Todo** agrupada por secciones + encabezados sticky ([`MenuCatalog`](../src/modules/products/components/MenuCatalog.tsx)).
-- [x] `ProductCard` + carrito en memoria ([`CartProvider`](../src/shared/context/cart-provider.tsx)).
-- [x] Página [`/menu`](<../src/app/(public)/menu/page.tsx>) con copy básico y `Suspense`.
+- [x] Vista **Todo** agrupada por secciones + encabezados de categoría ([`MenuCatalog`](../src/modules/products/components/MenuCatalog.tsx)).
+- [x] `ProductCard` con controles +/- y carrito en contexto ([`CartProvider`](../src/shared/context/cart-provider.tsx)).
+- [x] Página [`/menu`](../src/app/(public)/menu/page.tsx) con `Suspense` y manejo de error en el loader.
+
+### Carrito
+
+- [x] Persistencia (`localStorage`, clave `comal-cart-v1`).
+- [x] Página [`/cart`](../src/app/(public)/cart/page.tsx) con [`CartView`](../src/modules/cart/components/CartView.tsx).
+- [x] Botón flotante “Ver pedido” en menú ([`CartFloatingButton`](../src/modules/cart/components/CartFloatingButton.tsx)) con contador.
+- [x] Continuar → checkout con subtotal real.
+- [x] `DELIVERY_FEE` en [`menu.ts`](../src/lib/menu.ts).
+
+### Checkout y confirmación
+
+- [x] Checkout real en [`/checkout`](../src/app/(public)/checkout/page.tsx) ([`CheckoutForm`](../src/modules/checkout/components/CheckoutForm.tsx)): modalidad, datos, notas, pago, resumen.
+- [x] Validación y precios server-side ([`resolve-order-lines`](../src/modules/checkout/lib/resolve-order-lines.ts), negocio por `DEFAULT_BUSINESS_SLUG`).
+- [x] Creación de pedido + líneas en BD ([`persist-order`](../src/modules/checkout/lib/persist-order.ts)).
+- [x] Confirmación pública [`/order/[token]`](../src/app/(public)/order/[token]/page.tsx) vía `get_guest_order` / [`OrderConfirmationView`](../src/modules/checkout/components/OrderConfirmationView.tsx).
+- [x] Vaciar carrito al llegar a confirmación ([`ClearCartOnMount`](../src/modules/checkout/components/ClearCartOnMount.tsx)).
+- [x] Migraciones de pedidos + políticas RLS de invitado (insert/select + RPC).
+
+### Infra menor
+
+- [x] [`/api/health`](../src/app/api/health/route.ts) — `pnpm build` OK.
+- [x] Eliminada la página de prueba `test-db` (ya no existe en el repo).
 
 ---
 
 ## Datos y backend (menú público)
 
-- [ ] **RLS** en `categories` / `products` para lectura pública anónima (la migración inicial indica que RLS va en migraciones posteriores).
-- [ ] **Multi-negocio**: filtrar por `business_id` (hoy se traen filas sin acotar al negocio demo).
-- [ ] **Tipos generados** (`database.types.ts`) y usarlos en `catalog.ts` en lugar de rows manuales.
-- [ ] **Imágenes**: incluir `image_path` en la query y mostrarlas en `ProductCard` (Storage + URL pública o firmada).
-- [ ] **Orden de productos**: definir criterio (solo `name`, `sort_order`, etc.).
-- [ ] **Badges** (p. ej. «Favorito»): campo en BD o regla de negocio; no existe aún en schema.
-- [ ] **Descripción de categoría** (subtítulo bajo el nombre): columna en BD o copy estático (pospuesto; sigue en maqueta).
+- [ ] **RLS** en `categories` / `products` para lectura pública anónima (pedidos ya tienen RLS; catálogo sigue sin políticas).
+- [ ] **Multi-negocio**: filtrar por `business_id` en `catalog.ts` (checkout ya resuelve negocio; el menú trae todas las filas visibles).
+- [ ] **Tipos generados** (`database.types.ts`) y usarlos en `catalog.ts` y checkout.
+- [ ] **Imágenes**: `image_path` en query y UI (`ProductCard` / Storage).
+- [ ] **Orden de productos**: criterio único (`sort_order` vs solo `name`).
+- [ ] **Badges** (p. ej. «Favorito»): campo o regla en BD.
+- [ ] **Descripción de categoría** (subtítulo): columna en BD o copy acordado.
 
 ---
 
 ## UX / UI del menú
 
-- [ ] **Barra de categorías sticky** bajo el navbar (hoy la rejilla scrollea con la página).
-- [ ] **Scroll-spy en Todo**: resaltar categoría activa al pasar secciones al hacer scroll.
-- [ ] `?category=` **inválido**: redirect a `/menu` o estado «categoría no encontrada» (hoy slug desconocido puede confundir con Todo o lista vacía).
-- [ ] **Copy de empty state** distinto para Todo vs categoría sin productos.
-- [ ] `loading.tsx` en `/menu` con skeleton (hoy solo texto en fallback de `Suspense`).
-- [ ] `error.tsx` o boundary reutilizable (hoy `catch` genérico en la page).
-- [ ] **Metadata** (`title`, `description`) en `menu/page.tsx`.
-- [ ] **Copy de negocio**: alinear envío $25 y hora límite con [`STORE`](../src/lib/menu.ts) (parte hardcodeada en la page).
-- [ ] **Home → menú**: verificar que cada `?category=` en [`page.tsx`](<../src/app/(public)/page.tsx>) coincida con `categories.slug` en BD.
+- [ ] **Barra de categorías sticky** bajo el navbar.
+- [ ] **Scroll-spy en Todo**: resaltar categoría activa al hacer scroll.
+- [ ] `?category=` **inválido**: redirect o mensaje claro (hoy un slug desconocido se comporta como «Todo»).
+- [ ] **Copy de empty state** distinto para Todo vs categoría sin productos (hoy mismo texto en ambos).
+- [ ] `loading.tsx` en `/menu` con skeleton (hoy texto en fallback).
+- [ ] `error.tsx` en segmento menú o boundary reutilizable.
+- [ ] **Metadata** (`title`, `description`) en home, menú, carrito y checkout.
+- [ ] **Copy de negocio**: hora límite y envío alineados con [`STORE`](../src/lib/menu.ts) (parte hardcodeada en `menu/page.tsx`).
+- [ ] **Home → menú**: comprobar que cada slug en [`page.tsx`](../src/app/(public)/page.tsx) existe en BD (p. ej. `postres`).
 
 ---
 
-## Producto en tarjeta y carrito (desde menú)
+## Carrito y navbar
 
-- [x] **Cantidad visible en menú** (controles +/- con iconos animate-ui en `ProductCard`).
-- [x] **Persistencia del carrito** (`localStorage`, clave `comal-cart-v1`).
-- [x] **Badge en navbar** con `count` de `useCart`.
-- [x] **Página carrito** conectada a `useCart` ([`CartView`](../src/modules/cart/components/CartView.tsx)).
-- [x] **Ruta del carrito**: [`/cart`](../src/app/(public)/cart/page.tsx).
-- [x] **`DELIVERY_FEE`** en [`menu.ts`](../src/lib/menu.ts) (checkout en fase 2).
-- [ ] **Checkout** real (sustituir prueba `todos` en [`checkout/page.tsx`](<../src/app/(public)/checkout/page.tsx>)).
-- [x] Botón **Continuar** del carrito → checkout (subtotal real; checkout en fase 2).
+- [ ] **Badge en navbar** con ítems del carrito (el contador vive en el botón flotante, no en [`Navbar`](../src/shared/components/Navbar.tsx)).
+- [ ] **formatPrice** (`Intl` MXN) en menú y carrito (checkout ya lo usa).
 
 ---
 
-## Calidad y operación
+## Checkout y post-confirmación (pulido / fase 2)
 
-- [ ] Quitar o proteger [`test-db`](<../src/app/(public)/test-db/page.tsx>) en producción.
-- [ ] Prueba manual/E2E: Todo → filtro → deep link desde home → carrito → recarga.
-- [ ] Arreglar **TypeScript** del proyecto (`api/health/route.ts`) para que `pnpm build` pase en CI.
+- [ ] **Metadata** y título en checkout.
+- [ ] **Pedido programado** (`scheduled_for` en BD; sin UI).
+- [ ] **Reglas de horario** (corte 4:30 pm, anticipación mínima) en servidor.
+- [ ] **Seguimiento del pedido** para el cliente (misma URL con estados en tiempo real o enlace “ver estado”); hoy solo confirmación estática.
+- [ ] Registrar ruta `order` en [`navigation.ts`](../src/config/navigation.ts) y documentar en [`app-routes.md`](app-routes.md).
+- [ ] Endurecer políticas RLS de lectura en `orders` antes de producción.
 
 ---
 
-## Prioridad sugerida
+## Calidad
 
-1. Slugs home + `?category=` inválido + RLS lectura pública.
-2. ~~Carrito persistente + badge en navbar~~ (fase 1 hecha).
-3. Imágenes y polish UI (sticky categorías, loading, empty states).
-4. Subtítulos / favoritos si entran en diseño final.
-5. Checkout y creación de pedido (cierra el flujo MVP).
+- [ ] Prueba manual/E2E: home → categoría → carrito → recarga → checkout → confirmación → volver al menú.
+- [ ] Commitear y aplicar en remoto migraciones + módulo checkout aún locales (nov 2026).
+
+---
+
+## Prioridad sugerida (solo público)
+
+1. RLS catálogo + filtro `business_id` + slugs home validados.
+2. `?category=` inválido + metadata básica.
+3. Imágenes, sticky categorías, skeletons y `formatPrice` en menú.
+4. Seguimiento de pedido / programados (si entran en el siguiente hito de producto).
