@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { menuCategoryUrl, routes } from "@/src/config/navigation";
-import { STORE } from "@/src/lib/menu";
+import {
+  formatLastOrderLabel,
+  getDefaultBusiness,
+} from "@/src/lib/supabase/queries/business";
 import { cn } from "@/src/lib/utils";
 import Image from "next/image";
 
@@ -49,7 +52,9 @@ const tiles: Tile[] = [
   },
 ];
 
-export default function HomePage() {
+export default async function HomePage() {
+  const business = await getDefaultBusiness();
+
   return (
     <main className="flex flex-1 flex-col px-4 pb-10 bg-background">
       <header className="px-1 pb-6 pt-4 text-center">
@@ -113,9 +118,11 @@ export default function HomePage() {
       </div>
 
       <footer className="mt-8 rounded-2xl border border-border p-4 text-center text-sm leading-relaxed text-muted-foreground">
-        <p className="font-semibold text-foreground">{STORE.address}</p>
-        <p>{STORE.hours}</p>
-        <p>Último pedido a las {STORE.lastOrder}</p>
+        <p className="font-semibold text-foreground">{business.address}</p>
+        {business.hours ? <p>{business.hours}</p> : null}
+        {business.lastOrder ? (
+          <p>Último pedido a las {formatLastOrderLabel(business.lastOrder)}</p>
+        ) : null}
       </footer>
     </main>
   );
