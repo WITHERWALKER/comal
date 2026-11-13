@@ -160,7 +160,9 @@ create table public.products (
   constraint products_category_same_business_fk
     foreign key (category_id, business_id)
     references public.categories (id, business_id)
-    on delete restrict
+    on delete restrict,
+  constraint products_id_business_unique
+    unique (id, business_id)
 );
 
 comment on table public.products is

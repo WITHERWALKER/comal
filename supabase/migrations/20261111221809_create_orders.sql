@@ -108,6 +108,20 @@ create trigger set_orders_updated_at
   before update on public.orders
   for each row execute function public.set_updated_at();
 
+-- FK compuesta en order_items; en remoto initial_catalog ya aplicada sin esto.
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_constraint
+    where conname = 'products_id_business_unique'
+      and conrelid = 'public.products'::regclass
+  ) then
+    alter table public.products
+      add constraint products_id_business_unique unique (id, business_id);
+  end if;
+end $$;
+
 -- ---------------------------------------------------------------------------
 -- order_items (snapshot)
 -- ---------------------------------------------------------------------------
