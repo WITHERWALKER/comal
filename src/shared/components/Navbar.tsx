@@ -7,18 +7,12 @@ import { publicNavLinks } from "@/src/config/navigation";
 
 import { Menu } from "./animate-ui/icons/menu";
 import { ToggleIcon } from "./animate-ui/toggle-icon";
+import { ComalLogo } from "./ComalLogo";
 
 export function Logo() {
   return (
-    <Link
-      href="/"
-      aria-label="Comal, inicio"
-      className="font-serif text-secondary"
-    >
-      <span className="flex flex-col text-[1.7rem] font-black leading-[0.78] tracking-tight">
-        <span>CO</span>
-        <span className="pl-3 text-[1.35rem]">mal</span>
-      </span>
+    <Link href="/" aria-label="Comal, inicio" className="inline-block">
+      <ComalLogo />
     </Link>
   );
 }
